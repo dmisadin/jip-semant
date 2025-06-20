@@ -1,0 +1,27 @@
+error in line# 16
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 37
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 43
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 45
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 59
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 65
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 67
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 81
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 87
+    parsed as:         : _no_type
+    should be:         : Int

@@ -1,0 +1,306 @@
+error in line# 43
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 44
+    parsed as:         : _no_type
+    should be:         : String
+error in line# 51
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 52
+    parsed as:         : _no_type
+    should be:         : String
+error in line# 56
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 57
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 73
+    parsed as:               : _no_type
+    should be:               : SELF_TYPE
+error in line# 79
+    parsed as:               : _no_type
+    should be:               : String
+error in line# 81
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 87
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 89
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 95
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 97
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 107
+    parsed as:               : _no_type
+    should be:               : SELF_TYPE
+error in line# 113
+    parsed as:               : _no_type
+    should be:               : String
+error in line# 115
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 121
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 123
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 129
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 131
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 135
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 136
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 174
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 180
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 184
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 186
+    parsed as:         : _no_type
+    should be:         : Book
+error in line# 193
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 194
+    parsed as:         : _no_type
+    should be:         : String
+error in line# 198
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 199
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 211
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 216
+    parsed as:         : _no_type
+    should be:         : Book
+error in line# 226
+    parsed as:               : _no_type
+    should be:               : SELF_TYPE
+error in line# 232
+    parsed as:               : _no_type
+    should be:               : String
+error in line# 234
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 240
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 242
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 248
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 250
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 254
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 255
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 274
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 278
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 282
+    parsed as:         : _no_type
+    should be:         : Bool
+error in line# 283
+    parsed as:       : _no_type
+    should be:       : Bool
+error in line# 299
+    parsed as:         : _no_type
+    should be:         : Cons
+error in line# 305
+    parsed as:           : _no_type
+    should be:           : Cons
+error in line# 311
+    parsed as:           : _no_type
+    should be:           : Book
+error in line# 315
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 317
+    parsed as:         : _no_type
+    should be:         : Cons
+error in line# 318
+    parsed as:       : _no_type
+    should be:       : Cons
+error in line# 330
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 334
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 338
+    parsed as:         : _no_type
+    should be:         : Book
+error in line# 339
+    parsed as:       : _no_type
+    should be:       : Book
+error in line# 351
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 355
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 359
+    parsed as:         : _no_type
+    should be:         : BookList
+error in line# 360
+    parsed as:       : _no_type
+    should be:       : BookList
+error in line# 370
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 374
+    parsed as:       : _no_type
+    should be:       : Object
+error in line# 403
+    parsed as:       : _no_type
+    should be:       : Bool
+error in line# 424
+    parsed as:           : _no_type
+    should be:           : Book
+error in line# 425
+    parsed as:         : _no_type
+    should be:         : Book
+error in line# 432
+    parsed as:           : _no_type
+    should be:           : BookList
+error in line# 433
+    parsed as:         : _no_type
+    should be:         : BookList
+error in line# 437
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 438
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 446
+    parsed as:       : _no_type
+    should be:       : Book
+error in line# 454
+    parsed as:       : _no_type
+    should be:       : BookList
+error in line# 468
+    parsed as:             : _no_type
+    should be:             : Book
+error in line# 472
+    parsed as:           : _no_type
+    should be:           : Book
+error in line# 482
+    parsed as:               : _no_type
+    should be:               : SELF_TYPE
+error in line# 488
+    parsed as:               : _no_type
+    should be:               : String
+error in line# 490
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 500
+    parsed as:               : _no_type
+    should be:               : SELF_TYPE
+error in line# 506
+    parsed as:               : _no_type
+    should be:               : String
+error in line# 508
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 509
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 515
+    parsed as:           : _no_type
+    should be:           : BookList
+error in line# 519
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 520
+    parsed as:       : _no_type
+    should be:       : Object
+error in line# 535
+    parsed as:       : _no_type
+    should be:       : Bool
+error in line# 543
+    parsed as:       : _no_type
+    should be:       : Bool
+error in line# 571
+    parsed as:           : _no_type
+    should be:           : Book
+error in line# 577
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 581
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 583
+    parsed as:         : _no_type
+    should be:         : Book
+error in line# 593
+    parsed as:             : _no_type
+    should be:             : Article
+error in line# 599
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 603
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 607
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 609
+    parsed as:           : _no_type
+    should be:           : Article
+error in line# 622
+    parsed as:                   : _no_type
+    should be:                   : Nil
+error in line# 628
+    parsed as:                   : _no_type
+    should be:                   : Book
+error in line# 630
+    parsed as:                 : _no_type
+    should be:                 : Cons
+error in line# 636
+    parsed as:                 : _no_type
+    should be:                 : Article
+error in line# 638
+    parsed as:               : _no_type
+    should be:               : Cons
+error in line# 639
+    parsed as:             : _no_type
+    should be:             : BookList
+error in line# 645
+    parsed as:               : _no_type
+    should be:               : BookList
+error in line# 649
+    parsed as:             : _no_type
+    should be:             : Object
+error in line# 650
+    parsed as:           : _no_type
+    should be:           : Object

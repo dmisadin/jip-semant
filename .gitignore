@@ -1,0 +1,7 @@
+.vscode
+
+*.o
+lexer
+parser
+semant_test
+semant

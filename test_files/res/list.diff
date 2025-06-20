@@ -1,0 +1,186 @@
+error in line# 16
+    parsed as:       : _no_type
+    should be:       : Bool
+error in line# 28
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 32
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 36
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 37
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 49
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 53
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 57
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 58
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 72
+    parsed as:         : _no_type
+    should be:         : Cons
+error in line# 78
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 82
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 84
+    parsed as:       : _no_type
+    should be:       : List
+error in line# 113
+    parsed as:       : _no_type
+    should be:       : Bool
+error in line# 121
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 129
+    parsed as:       : _no_type
+    should be:       : List
+error in line# 150
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 151
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 158
+    parsed as:           : _no_type
+    should be:           : List
+error in line# 159
+    parsed as:         : _no_type
+    should be:         : List
+error in line# 163
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 164
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE
+error in line# 194
+    parsed as:           : _no_type
+    should be:           : List
+error in line# 198
+    parsed as:         : _no_type
+    should be:         : Bool
+error in line# 204
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 210
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 212
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 220
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 228
+    parsed as:               : _no_type
+    should be:               : List
+error in line# 232
+    parsed as:             : _no_type
+    should be:             : Int
+error in line# 234
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 240
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 246
+    parsed as:             : _no_type
+    should be:             : String
+error in line# 248
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 254
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 262
+    parsed as:               : _no_type
+    should be:               : List
+error in line# 266
+    parsed as:             : _no_type
+    should be:             : List
+error in line# 268
+    parsed as:           : _no_type
+    should be:           : Object
+error in line# 269
+    parsed as:         : _no_type
+    should be:         : Object
+error in line# 270
+    parsed as:       : _no_type
+    should be:       : Object
+error in line# 293
+    parsed as:                     : _no_type
+    should be:                     : List
+error in line# 299
+    parsed as:                     : _no_type
+    should be:                     : Int
+error in line# 301
+    parsed as:                   : _no_type
+    should be:                   : List
+error in line# 307
+    parsed as:                   : _no_type
+    should be:                   : Int
+error in line# 309
+    parsed as:                 : _no_type
+    should be:                 : List
+error in line# 315
+    parsed as:                 : _no_type
+    should be:                 : Int
+error in line# 317
+    parsed as:               : _no_type
+    should be:               : List
+error in line# 323
+    parsed as:               : _no_type
+    should be:               : Int
+error in line# 325
+    parsed as:             : _no_type
+    should be:             : List
+error in line# 331
+    parsed as:             : _no_type
+    should be:             : Int
+error in line# 333
+    parsed as:           : _no_type
+    should be:           : List
+error in line# 334
+    parsed as:         : _no_type
+    should be:         : List
+error in line# 344
+    parsed as:               : _no_type
+    should be:               : List
+error in line# 348
+    parsed as:             : _no_type
+    should be:             : Bool
+error in line# 349
+    parsed as:           : _no_type
+    should be:           : Bool
+error in line# 357
+    parsed as:               : _no_type
+    should be:               : SELF_TYPE
+error in line# 363
+    parsed as:               : _no_type
+    should be:               : List
+error in line# 365
+    parsed as:             : _no_type
+    should be:             : Object
+error in line# 374
+    parsed as:                 : _no_type
+    should be:                 : List
+error in line# 378
+    parsed as:               : _no_type
+    should be:               : List
+error in line# 379
+    parsed as:             : _no_type
+    should be:             : List
+error in line# 380
+    parsed as:           : _no_type
+    should be:           : List

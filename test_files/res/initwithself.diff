@@ -1,0 +1,3 @@
+error in line# 16
+    parsed as:       : _no_type
+    should be:       : SELF_TYPE

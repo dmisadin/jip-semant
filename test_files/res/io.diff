@@ -1,0 +1,33 @@
+error in line# 34
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 40
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 42
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 48
+    parsed as:           : _no_type
+    should be:           : SELF_TYPE
+error in line# 54
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 56
+    parsed as:         : _no_type
+    should be:         : SELF_TYPE
+error in line# 65
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 69
+    parsed as:           : _no_type
+    should be:           : String
+error in line# 70
+    parsed as:         : _no_type
+    should be:         : String
+error in line# 79
+    parsed as:             : _no_type
+    should be:             : SELF_TYPE
+error in line# 83
+    parsed as:           : _no_type
+    should be:           : Int

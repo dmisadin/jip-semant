@@ -1,0 +1,51 @@
+error in line# 16
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 24
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 37
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 41
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 42
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 43
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 58
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 66
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 79
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 83
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 84
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 85
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 100
+    parsed as:       : _no_type
+    should be:       : Int
+error in line# 113
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 117
+    parsed as:           : _no_type
+    should be:           : Int
+error in line# 118
+    parsed as:         : _no_type
+    should be:         : Int
+error in line# 119
+    parsed as:       : _no_type
+    should be:       : Int
