@@ -86,11 +86,13 @@ static void initialize_constants(void)
 ClassTable::ClassTable(Classes classes) : semant_errors(0) , error_stream(cerr) {
 
     /* Fill this in */
-
+    install_basic_classes();
+    build_inheritance_graph(classes); 
+    check_semantic_errors();
 }
 
 void ClassTable::install_basic_classes() {
-
+    
     // The tree package uses these globals to annotate the classes built below.
    // curr_lineno  = 0;
     Symbol filename = stringtable.add_string("<basic class>");
@@ -188,7 +190,83 @@ void ClassTable::install_basic_classes() {
 						      Str, 
 						      no_expr()))),
 	       filename);
+
+    class_map[Object_class->get_name()] = Object_class;
+    parent_map[Object_class->get_name()] = No_class;
+
+    class_map[IO_class->get_name()] = IO_class;
+    parent_map[IO_class->get_name()] = Object;
+
+    class_map[Int_class->get_name()] = Int_class;
+    parent_map[Int_class->get_name()] = Object;
+
+    class_map[Bool_class->get_name()] = Bool_class;
+    parent_map[Bool_class->get_name()] = Object;
+
+    class_map[Str_class->get_name()] = Str_class;
+    parent_map[Str_class->get_name()] = Object;
 }
+
+void ClassTable::build_inheritance_graph(Classes classes) {
+    for (int i = classes->first(); classes->more(i); i = classes->next(i)) {
+        if (!classes->nth(i)) {
+            std::cerr << "Null class at index " << i << std::endl;
+            continue;
+        }
+        Class_ cls = classes->nth(i);
+        Symbol name = cls->get_name();
+        Symbol parent = cls->get_parent();
+
+        if (class_map.count(name)) {
+            semant_error(cls) << "Class " << name << " redefined." << std::endl;
+            continue;
+        }
+
+        class_map[name] = cls;
+        parent_map[name] = parent;
+    }
+}
+
+void ClassTable::check_semantic_errors() {
+    // Provjeri postoji li Main klasa
+    if (!class_map.count(Main)) {
+        semant_error() << "Class Main is not defined." << std::endl;
+    }
+
+    // Provjeri nedozvoljeno nasljeđivanje i cikluse
+    for (const auto& [child, parent] : parent_map) {
+        // Ako child nije u mapi, preskoči (sigurnosna provjera)
+        if (!class_map.count(child)) continue;
+
+        Class_ child_class = class_map[child];
+
+        if (parent == Int || parent == Bool || parent == Str) {
+            semant_error(child_class) << "Class " << child 
+                << " cannot inherit from basic class " << parent << "." << std::endl;
+        }
+
+        if (!class_map.count(parent) && parent != Object && parent != No_class) {
+            semant_error(child_class) << "Class " << child 
+                << " inherits from undefined class " << parent << "." << std::endl;
+        }
+
+        if (has_inheritance_cycle(child)) {
+            semant_error(child_class) << "Inheritance cycle detected at class " << child << "." << std::endl;
+        }
+    }
+}
+
+
+bool ClassTable::has_inheritance_cycle(Symbol c) {
+    std::set<Symbol> path;
+    while (c != Object && c != No_class) {
+        if (path.count(c)) return true;
+        path.insert(c);
+        c = parent_map[c];
+    }
+    return false;
+}
+
 
 ////////////////////////////////////////////////////////////////////
 //

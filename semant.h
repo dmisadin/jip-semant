@@ -7,6 +7,8 @@
 #include "stringtab.h"
 #include "symtab.h"
 #include "list.h"
+#include <map>
+#include <set>
 
 #define TRUE 1
 #define FALSE 0
@@ -20,17 +22,25 @@ typedef ClassTable *ClassTableP;
 // methods.
 
 class ClassTable {
-private:
-  int semant_errors;
-  void install_basic_classes();
-  ostream& error_stream;
+  private:
+    int semant_errors;
+    void install_basic_classes();
+    ostream& error_stream;
 
-public:
-  ClassTable(Classes);
-  int errors() { return semant_errors; }
-  ostream& semant_error();
-  ostream& semant_error(Class_ c);
-  ostream& semant_error(Symbol filename, tree_node *t);
+    std::map<Symbol, Class_> class_map;
+    std::map<Symbol, Symbol> parent_map;
+    std::set<Symbol> visited;
+
+    void build_inheritance_graph(Classes classes);
+    bool has_inheritance_cycle(Symbol c);
+    void check_semantic_errors();
+
+  public:
+    ClassTable(Classes);
+    int errors() { return semant_errors; }
+    ostream& semant_error();
+    ostream& semant_error(Class_ c);
+    ostream& semant_error(Symbol filename, tree_node *t);
 };
 
 

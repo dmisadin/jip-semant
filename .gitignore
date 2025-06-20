@@ -1,7 +1,12 @@
 .vscode
+examples/
 
 *.o
 lexer
 parser
 semant_test
 semant
+
+*.myout
+*.cool.myout
+*.diff
