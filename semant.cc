@@ -465,8 +465,18 @@ void leq_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* o
 void eq_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
     e1->walk_down(classtable, object_env, current_class);
     e2->walk_down(classtable, object_env, current_class);
+
+    Symbol t1 = e1->get_type();
+    Symbol t2 = e2->get_type();
+
+    if ((t1 == Int || t1 == Str || t1 == Bool || t2 == Int || t2 == Str || t2 == Bool) && t1 != t2) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Illegal comparison with a basic type.\n";
+    }
+
     set_type(Bool);
 }
+
 
 void lt_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
     e1->walk_down(classtable, object_env, current_class);
