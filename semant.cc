@@ -313,9 +313,29 @@ Symbol ClassTable::least_common_ancestor(Symbol a, Symbol b) {
     return Object; // fallback
 }
 
+bool ClassTable::is_attr_inherited(Symbol attr_name, Symbol class_name) {
+    Symbol parent = parent_map[class_name];
+
+    while (parent != No_class) {
+        if (!class_map.count(parent)) break;
+
+        Features features = class_map[parent]->get_features();
+        for (int i = features->first(); features->more(i); i = features->next(i)) {
+            Feature f = features->nth(i);
+            attr_class* attr = dynamic_cast<attr_class*>(f);
+            if (attr && attr->get_name() == attr_name) {
+                return true;
+            }
+        }
+
+        parent = parent_map[parent];
+    }
+    return false;
+}
+
 
 void class__class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env) {
-    object_env->enterscope();  // ➕ otvori novi scope za atribute
+    object_env->enterscope();
 
     // 1. Dodaj atribute klase u objektni kontekst
     for (int i = features->first(); features->more(i); i = features->next(i)) {
@@ -336,10 +356,21 @@ void class__class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>
     // 2. Pozovi walk_down na svaku metodu i atribut
     for (int i = features->first(); features->more(i); i = features->next(i)) {
         Feature f = features->nth(i);
+        attr_class* attr = dynamic_cast<attr_class*>(f);
+
+        if (attr) {
+            Symbol attr_name = attr->get_name();
+
+            if (classtable->is_attr_inherited(attr_name, name)) {
+                classtable->semant_error(filename, this)
+                    << "Attribute " << attr_name << " is an attribute of an inherited class.\n";
+            }
+        }
+
         f->walk_down(classtable, object_env, this);
     }
 
-    object_env->exitscope(); // ➖ zatvori scope
+    object_env->exitscope();
 }
 
 

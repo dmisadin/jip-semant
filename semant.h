@@ -44,6 +44,7 @@ class ClassTable {
     std::map<Symbol, Symbol> parent_map;
     bool conforms(Symbol child, Symbol parent);
     Symbol least_common_ancestor(Symbol a, Symbol b);
+    bool is_attr_inherited(Symbol attr_name, Symbol class_name);
 };
 
 
