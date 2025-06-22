@@ -27,13 +27,12 @@ class ClassTable {
     void install_basic_classes();
     ostream& error_stream;
 
-    std::map<Symbol, Class_> class_map;
-    std::map<Symbol, Symbol> parent_map;
     std::set<Symbol> visited;
 
     void build_inheritance_graph(Classes classes);
     bool has_inheritance_cycle(Symbol c);
     void check_semantic_errors();
+    Class_ current_class;
 
   public:
     ClassTable(Classes);
@@ -41,6 +40,10 @@ class ClassTable {
     ostream& semant_error();
     ostream& semant_error(Class_ c);
     ostream& semant_error(Symbol filename, tree_node *t);
+    std::map<Symbol, Class_> class_map;
+    std::map<Symbol, Symbol> parent_map;
+    bool conforms(Symbol child, Symbol parent);
+    Symbol least_common_ancestor(Symbol a, Symbol b);
 };
 
 

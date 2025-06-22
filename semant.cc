@@ -217,8 +217,8 @@ void ClassTable::build_inheritance_graph(Classes classes) {
         Symbol name = cls->get_name();
         Symbol parent = cls->get_parent();
 
-        if (class_map.count(name)) {
-            semant_error(cls) << "Class " << name << " redefined." << std::endl;
+        if (class_map.count(name)) { //Class A was previously defined.
+            semant_error(cls) << "Class " << name << " was previously defined." << std::endl;
             continue;
         }
 
@@ -254,6 +254,14 @@ void ClassTable::check_semantic_errors() {
             semant_error(child_class) << "Inheritance cycle detected at class " << child << "." << std::endl;
         }
     }
+
+    for (const auto& [name, class_] : class_map) {
+        if (name == Object || name == IO || name == Int || name == Bool || name == Str)
+            continue;
+        current_class = class_;
+        SymbolTable<Symbol, Symbol> object_env;
+        class_->walk_down(this, &object_env);
+    }
 }
 
 
@@ -266,6 +274,485 @@ bool ClassTable::has_inheritance_cycle(Symbol c) {
     }
     return false;
 }
+
+bool ClassTable::conforms(Symbol child, Symbol parent) {
+    if (child == parent) return true;
+    if (child == SELF_TYPE) {
+        if (parent == SELF_TYPE) return true;
+        child = current_class->get_name(); // SELF_TYPE se ponaša kao trenutna klasa
+    }
+    if (parent == SELF_TYPE) return false;
+
+    while (child != No_class) {
+        if (child == parent) return true;
+        if (parent_map.find(child) == parent_map.end()) break;
+        child = parent_map[child];
+    }
+
+    return false;
+}
+
+Symbol ClassTable::least_common_ancestor(Symbol a, Symbol b) {
+    if (a == SELF_TYPE) a = current_class->get_name();
+    if (b == SELF_TYPE) b = current_class->get_name();
+
+    std::set<Symbol> ancestors;
+
+    while (a != No_class) {
+        ancestors.insert(a);
+        if (parent_map.find(a) == parent_map.end()) break;
+        a = parent_map[a];
+    }
+
+    while (b != No_class) {
+        if (ancestors.count(b)) return b;
+        if (parent_map.find(b) == parent_map.end()) break;
+        b = parent_map[b];
+    }
+
+    return Object; // fallback
+}
+
+
+void class__class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env) {
+    object_env->enterscope();  // ➕ otvori novi scope za atribute
+
+    // 1. Dodaj atribute klase u objektni kontekst
+    for (int i = features->first(); features->more(i); i = features->next(i)) {
+        Feature f = features->nth(i);
+        attr_class* attr = dynamic_cast<attr_class*>(f);
+        if (attr) {
+            Symbol name = attr->get_name();
+            Symbol type = attr->get_type_decl();
+            if (name == self) {
+                classtable->semant_error(get_filename(), this)
+                    << "'self' cannot be the name of an attribute.\n";
+            } else {
+                object_env->addid(name, new Symbol(type));
+            }
+        }
+    }
+
+    // 2. Pozovi walk_down na svaku metodu i atribut
+    for (int i = features->first(); features->more(i); i = features->next(i)) {
+        Feature f = features->nth(i);
+        f->walk_down(classtable, object_env, this);
+    }
+
+    object_env->exitscope(); // ➖ zatvori scope
+}
+
+
+void attr_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    if (init->get_type() == NULL) {
+        init->walk_down(classtable, object_env, current_class);
+    }
+
+    Symbol init_type = init->get_type();
+
+    // Ako nema inicijalizacije (tj. no_expr), ne radi se provjera tipa
+    if (typeid(*init) != typeid(no_expr_class)) {
+        if (!classtable->conforms(init_type, type_decl)) {
+            classtable->semant_error(current_class->get_filename(), this)
+                << "Type of initialization expression " << init_type
+                << " does not conform to declared type " << type_decl
+                << " of attribute " << name << ".\n";
+        }
+    }
+
+    set_type(type_decl);
+}
+
+
+
+void object_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    if (name == self) {
+        set_type(SELF_TYPE); // self je uvijek SELF_TYPE
+        return;
+    } 
+
+    Symbol* type = object_env->lookup(name);
+    if (type) {
+        set_type(*type);
+    } else {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Undeclared identifier " << name << ".\n";
+        set_type(Object); // fallback
+    }
+}
+
+
+
+void plus_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+
+    if (e1->get_type() != Int || e2->get_type() != Int) {
+        classtable->semant_error(current_class) << "Non-Int arguments: " << e1->get_type() << " + " << e2->get_type() << ".\n";
+        set_type(Object);
+    } else {
+        set_type(Int);
+    }
+}
+
+void no_expr_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    set_type(No_type);
+}
+
+void isvoid_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    set_type(Bool);
+}
+
+void new__class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    set_type(type_name == SELF_TYPE ? SELF_TYPE : type_name);
+}
+
+void string_const_class::walk_down(ClassTable*, SymbolTable<Symbol, Symbol>*, Class_){
+    set_type(Str);
+}
+
+void bool_const_class::walk_down(ClassTable*, SymbolTable<Symbol, Symbol>*, Class_){
+    set_type(Bool);
+}
+
+void int_const_class::walk_down(ClassTable*, SymbolTable<Symbol, Symbol>*, Class_){
+    set_type(Int);
+}
+
+void comp_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    set_type(Bool);
+}
+
+void leq_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+    set_type(Bool);
+}
+
+void eq_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+    set_type(Bool);
+}
+
+void lt_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+    set_type(Bool);
+}
+
+void neg_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    set_type(Int);
+}
+
+void divide_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+    set_type(Int);
+}
+
+void mul_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+    set_type(Int);
+}
+
+void sub_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    e1->walk_down(classtable, object_env, current_class);
+    e2->walk_down(classtable, object_env, current_class);
+    set_type(Int);
+}
+
+void let_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    object_env->enterscope();
+
+    if (identifier == self) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "'self' cannot be bound in a 'let' expression.\n";
+    } else {
+        object_env->addid(identifier, new Symbol(type_decl));
+    }
+
+    if (init) {
+        init->walk_down(classtable, object_env, current_class);
+        Symbol init_type = init->get_type();
+        if (!classtable->conforms(init_type, type_decl)) {
+            classtable->semant_error(current_class->get_filename(), this)
+                << "Inferred type " << init_type << " of initialization does not conform to declared type "
+                << type_decl << " of identifier " << identifier << ".\n";
+        }
+    }
+
+    body->walk_down(classtable, object_env, current_class);
+    set_type(body->get_type());
+
+    object_env->exitscope();
+}
+
+void block_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    for (int i = 0; i < body->len(); ++i)
+        body->nth(i)->walk_down(classtable, object_env, current_class);
+
+    set_type(body->nth(body->len() - 1)->get_type());
+}
+
+/*
+void typcase_class::walk_down(ClassTable*, SymbolTable<Symbol, Symbol>*, Class_) {
+    set_type(Object); // puni kod dolazi kasnije
+}
+*/
+
+void typcase_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    expr->walk_down(classtable, object_env, current_class);
+    std::set<Symbol> seen;
+
+    Symbol result_type = nullptr;
+
+    for (int i = cases->first(); cases->more(i); i = cases->next(i)) {
+        Case case_ = cases->nth(i);
+        Symbol type = case_->get_type_decl();
+
+        if (seen.count(type))
+            classtable->semant_error(); // duplicate branch type
+        seen.insert(type);
+
+        object_env->enterscope();
+        object_env->addid(case_->get_name(), new Symbol(type));
+        case_->get_expr()->walk_down(classtable, object_env, current_class);
+        object_env->exitscope();
+
+        Symbol branch_type = case_->get_expr()->get_type();
+        result_type = (i == 0) ? branch_type : classtable->least_common_ancestor(result_type, branch_type);
+    }
+
+    set_type(result_type);
+}
+
+
+void loop_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    pred->walk_down(classtable, object_env, current_class);
+    body->walk_down(classtable, object_env, current_class);
+    set_type(Object); // loop uvijek vraća Object
+}
+
+void cond_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    pred->walk_down(classtable, object_env, current_class);
+    then_exp->walk_down(classtable, object_env, current_class);
+    else_exp->walk_down(classtable, object_env, current_class);
+
+    if (pred->get_type() != Bool)
+        classtable->semant_error(); // condition not Bool
+
+    set_type(classtable->least_common_ancestor(
+        then_exp->get_type(), else_exp->get_type()));
+}
+
+void method_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    object_env->enterscope();
+    object_env->addid(self, new Symbol(current_class->get_name())); // radi self
+    // Dodaj formalne parametre u okruženje
+    for (int i = formals->first(); formals->more(i); i = formals->next(i)) {
+        Symbol name = formals->nth(i)->get_name();
+        Symbol type = formals->nth(i)->get_type_decl();
+
+        if (name == self) {
+            classtable->semant_error(current_class->get_filename(), this)
+                << "'self' cannot be used as a formal parameter name.\n";
+        } else {
+            object_env->addid(name, new Symbol(type));
+        }
+    }
+
+    // Provjeri tijelo funkcije
+    expr->walk_down(classtable, object_env, current_class);
+
+    Symbol body_type = expr->get_type();
+    Symbol declared_return = return_type;
+
+    if (!classtable->conforms(body_type, declared_return)) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Method " << name << " has body of type " << body_type
+            << " but declared return type is " << declared_return << ".\n";
+    }
+
+    object_env->exitscope();
+}
+
+
+void dispatch_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    expr->walk_down(classtable, object_env, current_class);
+    Symbol expr_type = expr->get_type();
+
+    // Ako je SELF_TYPE, koristi ime trenutne klase
+    if (expr_type == SELF_TYPE)
+        expr_type = current_class->get_name();
+
+    // Provjeri postoji li klasa
+    if (!classtable->class_map.count(expr_type)) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Dispatch on undefined class " << expr_type << ".\n";
+        set_type(Object);
+        return;
+    }
+
+    Class_ target_class = classtable->class_map[expr_type];
+    bool method_found = false;
+    method_class* method_ptr = nullptr;
+
+    // Pronađi metodu u hijerarhiji
+    while (target_class != nullptr && target_class->get_name() != No_class) {
+        Features features = target_class->get_features();
+
+        for (int i = features->first(); features->more(i); i = features->next(i)) {
+            Feature f = features->nth(i);
+            method_class* m = dynamic_cast<method_class*>(f);
+            if (m && m->get_name() == name) {
+                method_found = true;
+                method_ptr = m;
+                break;
+            }
+        }
+
+        if (method_found) break;
+
+        Symbol parent_name = classtable->parent_map[target_class->get_name()];
+        if (!classtable->class_map.count(parent_name)) break;
+        target_class = classtable->class_map[parent_name];
+    }
+
+    if (!method_found) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Dispatch to undefined method " << name << ".\n";
+        set_type(Object);
+        return;
+    }
+
+    // Provjeri argumente
+    Formals formals = method_ptr->get_formals();
+    if (formals->len() != actual->len()) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Method " << name << " called with wrong number of arguments.\n";
+    } else {
+        for (int i = 0; i < actual->len(); ++i) {
+            Expression arg = actual->nth(i);
+            arg->walk_down(classtable, object_env, current_class);
+
+            Symbol arg_type = arg->get_type();
+            Symbol param_type = formals->nth(i)->get_type_decl();
+
+            if (!classtable->conforms(arg_type, param_type)) {
+                classtable->semant_error(current_class->get_filename(), this)
+                    << "Argument " << i + 1 << " of method " << name << " has type "
+                    << arg_type << " but expected " << param_type << ".\n";
+            }
+        }
+    }
+
+    Symbol return_type = method_ptr->get_return_type();
+    if (return_type == SELF_TYPE)
+        set_type(expr->get_type()); // SELF_TYPE: rezultat je tip objekta
+    else
+        set_type(return_type);
+}
+/*
+void static_dispatch_class::walk_down(ClassTable*, SymbolTable<Symbol, Symbol>*, Class_) {
+    set_type(Object); // kasnije: provjeri eksplicitni tip
+}
+*/
+
+void static_dispatch_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    expr->walk_down(classtable, object_env, current_class);
+    Symbol expr_type = expr->get_type();
+
+    if (expr_type == SELF_TYPE)
+        expr_type = current_class->get_name();
+
+    // statički tip mora postojati i biti nadtip
+    if (!classtable->class_map.count(type_name))
+        classtable->semant_error(); // static type does not exist
+    else if (!classtable->conforms(expr_type, type_name))
+        classtable->semant_error(); // expression type doesn't conform to static type
+
+    // traži metodu
+    Class_ target = classtable->class_map[type_name];
+    method_class* method_ptr = nullptr;
+
+    while (target && target->get_name() != No_class) {
+        Features feats = target->get_features();
+
+        for (int i = 0; i < feats->len(); ++i) {
+            method_class* m = dynamic_cast<method_class*>(feats->nth(i));
+            if (m && m->get_name() == name) {
+                method_ptr = m;
+                break;
+            }
+        }
+
+        if (method_ptr) break;
+
+        Symbol parent_name = classtable->parent_map[target->get_name()];
+        if (!classtable->class_map.count(parent_name)) break;
+        target = classtable->class_map[parent_name];
+    }
+
+    if (!method_ptr) {
+        classtable->semant_error(); // undefined method
+        set_type(Object);
+        return;
+    }
+
+    // provjera argumenata
+    if (method_ptr->get_formals()->len() != actual->len())
+        classtable->semant_error(); // wrong number of args
+    else {
+        for (int i = 0; i < actual->len(); ++i) {
+            actual->nth(i)->walk_down(classtable, object_env, current_class);
+
+            Symbol arg_type = actual->nth(i)->get_type();
+            Symbol expected = method_ptr->get_formals()->nth(i)->get_type_decl();
+
+            if (!classtable->conforms(arg_type, expected))
+                classtable->semant_error(); // type mismatch
+        }
+    }
+
+    set_type(method_ptr->get_return_type() == SELF_TYPE ? expr->get_type() : method_ptr->get_return_type());
+}
+
+void assign_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
+    expr->walk_down(classtable, object_env, current_class);
+
+    if (name == self) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Cannot assign to 'self'.\n";
+        set_type(Object);
+        return;
+    }
+
+    Symbol* declared_type = object_env->lookup(name);
+    if (!declared_type) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Assignment to undeclared variable " << name << ".\n";
+        set_type(Object);
+        return;
+    }
+
+    Symbol expr_type = expr->get_type();
+    if (!classtable->conforms(expr_type, *declared_type)) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Type " << expr_type << " of assigned expression does not conform to declared type "
+            << *declared_type << " of identifier " << name << ".\n";
+        set_type(Object);
+    } else {
+        set_type(expr_type);
+    }
+}
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////
