@@ -605,7 +605,9 @@ void cond_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* 
 void method_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
     object_env->enterscope();
     object_env->addid(self, new Symbol(current_class->get_name())); // radi self
-    // Dodaj formalne parametre u okruženje
+
+    std::set<Symbol> seen_formals;  // skup za provjeru duplikata
+
     for (int i = formals->first(); formals->more(i); i = formals->next(i)) {
         Symbol name = formals->nth(i)->get_name();
         Symbol type = formals->nth(i)->get_type_decl();
@@ -613,12 +615,15 @@ void method_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>
         if (name == self) {
             classtable->semant_error(current_class->get_filename(), this)
                 << "'self' cannot be used as a formal parameter name.\n";
+        } else if (seen_formals.count(name)) {
+            classtable->semant_error(current_class->get_filename(), this)
+                << "Formal parameter " << name << " is multiply defined.\n";
         } else {
+            seen_formals.insert(name);
             object_env->addid(name, new Symbol(type));
         }
     }
 
-    // Provjeri tijelo funkcije
     expr->walk_down(classtable, object_env, current_class);
 
     Symbol body_type = expr->get_type();
@@ -632,6 +637,7 @@ void method_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>
 
     object_env->exitscope();
 }
+
 
 
 void dispatch_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
