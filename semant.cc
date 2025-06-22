@@ -513,18 +513,21 @@ void let_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* o
     if (identifier == self) {
         classtable->semant_error(current_class->get_filename(), this)
             << "'self' cannot be bound in a 'let' expression.\n";
-    } else {
-        object_env->addid(identifier, new Symbol(type_decl));
     }
+
+    Symbol init_type = No_type;
 
     if (init) {
         init->walk_down(classtable, object_env, current_class);
-        Symbol init_type = init->get_type();
-        if (!classtable->conforms(init_type, type_decl)) {
-            classtable->semant_error(current_class->get_filename(), this)
-                << "Inferred type " << init_type << " of initialization does not conform to declared type "
-                << type_decl << " of identifier " << identifier << ".\n";
-        }
+        init_type = init->get_type();
+    }
+
+    object_env->addid(identifier, new Symbol(type_decl));
+
+    if (init && init_type != No_type && !classtable->conforms(init_type, type_decl)) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Inferred type " << init_type << " of initialization does not conform to declared type "
+            << type_decl << " of identifier " << identifier << ".\n";
     }
 
     body->walk_down(classtable, object_env, current_class);
@@ -532,6 +535,7 @@ void let_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* o
 
     object_env->exitscope();
 }
+
 
 void block_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
     for (int i = 0; i < body->len(); ++i)
