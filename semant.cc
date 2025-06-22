@@ -574,9 +574,16 @@ void typcase_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol
 
 
 void loop_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
-    pred->walk_down(classtable, object_env, current_class);
+    pred->walk_down(classtable, object_env, current_class);  // evaluacija uvjeta
+    Symbol cond_type = pred->get_type();
+
+    if (cond_type != Bool) {
+        classtable->semant_error(current_class->get_filename(), this)
+            << "Loop condition does not have type Bool.\n";
+    }
+
     body->walk_down(classtable, object_env, current_class);
-    set_type(Object); // loop uvijek vraća Object
+    set_type(Object);
 }
 
 void cond_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>* object_env, Class_ current_class) {
