@@ -221,6 +221,10 @@ void ClassTable::build_inheritance_graph(Classes classes) {
             semant_error(cls) << "Class " << name << " was previously defined." << std::endl;
             continue;
         }
+        if (name == SELF_TYPE) {
+            semant_error(cls->get_filename(), cls)
+            << "Redefinition of basic class SELF_TYPE.\n";
+        }  
 
         class_map[name] = cls;
         parent_map[name] = parent;
@@ -615,6 +619,9 @@ void method_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>
         if (name == self) {
             classtable->semant_error(current_class->get_filename(), this)
                 << "'self' cannot be used as a formal parameter name.\n";
+        } else if (type == SELF_TYPE) {
+            classtable->semant_error(current_class->get_filename(), this)
+                << "Formal parameter " << name << " cannot have type SELF_TYPE.\n";
         } else if (seen_formals.count(name)) {
             classtable->semant_error(current_class->get_filename(), this)
                 << "Formal parameter " << name << " is multiply defined.\n";
@@ -637,6 +644,7 @@ void method_class::walk_down(ClassTable* classtable, SymbolTable<Symbol, Symbol>
 
     object_env->exitscope();
 }
+
 
 
 
